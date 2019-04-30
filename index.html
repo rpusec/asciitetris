@@ -12,21 +12,23 @@
 	<script type="text/javascript">
 		(function(){
 			const dimensions = {
-				w: 8,
-				h: 10,
+				w: 20,
+				h: 20,
 			};
 			const assets = {
 				bg: '&nbsp;',
 				wall: '#',
 			};
 			const maxTilesAmount = dimensions.w * dimensions.h;
+			const tileDim = 4;
+			const initialTilePos = Math.floor(dimensions.w / 2) - tileDim / 2;
 			const arrTiles = [];
 			const tileShapes = [
 				[
-					0,0,0,0,
 					0,0,1,0,
 					0,1,1,0,
 					0,1,0,0,
+					0,0,0,0,
 				],
 				[
 					0,0,1,0,
@@ -36,14 +38,23 @@
 				],
 			];
 
+			var currShapeIndex = Math.floor(Math.random() * tileShapes.length);
 			var elemScreen;
 
 			window.onload = function(){
 				elemScreen = document.getElementsByTagName('body')[0];
 
+				var currShape = tileShapes[currShapeIndex];
+				var tileIndex = 0;
+
 				for(var i = 0; i < maxTilesAmount; i++){
 					if((i % dimensions.w) === 0 || ((i + 1) % dimensions.w) === 0){
 						arrTiles.push(assets.wall);
+					}
+					else if((i % dimensions.w) >= initialTilePos && (i % dimensions.w) <= (initialTilePos + tileDim - 1) && i <= dimensions.w * tileDim){
+						var t = currShape[tileIndex];
+						arrTiles.push(t == 1 ? 1 : assets.bg);
+						tileIndex++;
 					}
 					else{
 						arrTiles.push(assets.bg);

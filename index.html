@@ -21,7 +21,6 @@
 			};
 			const maxTilesAmount = dimensions.w * dimensions.h;
 			const tileDim = 4;
-			const initialTilePos = Math.floor(dimensions.w / 2) - tileDim / 2;
 			const arrTiles = [];
 			const tileShapes = [
 				[
@@ -37,34 +36,74 @@
 					0,0,1,0,
 				],
 			];
+			const KEYS = {
+				UP: 38,
+				DOWN: 40,
+				LEFT: 37,
+				RIGHT: 39,
+			};
+
+			const pos = {
+				x: Math.floor(dimensions.w / 2) - Math.floor(tileDim / 2),
+				y: 0,
+			};
 
 			var currShapeIndex = Math.floor(Math.random() * tileShapes.length);
 			var elemScreen;
 
+			var currUnicodeTile = 65;
+
 			window.onload = function(){
 				elemScreen = document.getElementsByTagName('body')[0];
 
+				window.addEventListener('keydown', function(e){
+					var key = e.which || e.keyCode;
+
+					switch(key){
+						case KEYS.UP : 
+							break;
+						case KEYS.DOWN : 
+							break;
+						case KEYS.LEFT : 
+							pos.x--;
+							break;
+						case KEYS.RIGHT : 
+							pos.x++;
+							break;
+					}
+
+					console.log(JSON.stringify(pos));
+
+					updateGraphics();
+				}, false);
+
+				updateGraphics();
+			}
+
+			function updateGraphics(){
 				var currShape = tileShapes[currShapeIndex];
 				var tileIndex = 0;
 
+				arrTiles.splice(0, arrTiles.length);
+
 				for(var i = 0; i < maxTilesAmount; i++){
+					if((i % dimensions.w) >= pos.x && (i % dimensions.w) <= (pos.x + tileDim - 1) && i <= dimensions.w * tileDim){
+						var t = currShape[tileIndex];
+						tileIndex++;
+						if(t == 1){
+							arrTiles.push(String.fromCharCode(currUnicodeTile));
+							continue;
+						}
+					}
+
 					if((i % dimensions.w) === 0 || ((i + 1) % dimensions.w) === 0){
 						arrTiles.push(assets.wall);
-					}
-					else if((i % dimensions.w) >= initialTilePos && (i % dimensions.w) <= (initialTilePos + tileDim - 1) && i <= dimensions.w * tileDim){
-						var t = currShape[tileIndex];
-						arrTiles.push(t == 1 ? 1 : assets.bg);
-						tileIndex++;
 					}
 					else{
 						arrTiles.push(assets.bg);
 					}
 				}
 
-				updateGraphics();
-			}
-
-			function updateGraphics(){
 				var res = '';
 				for(var i = 0; i < maxTilesAmount; i++){
 					res += arrTiles[i];

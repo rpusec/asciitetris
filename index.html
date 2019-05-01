@@ -39,7 +39,7 @@
 				LEFT: 37,
 				RIGHT: 39,
 			};
-			const MAX_ROTATE_TYPE = 3;
+			const MAX_ROTATE_TYPE = 1;
 
 			var posX = 0;
 			var currShapeIndex = Math.floor(Math.random() * tileShapes.length);
@@ -156,14 +156,15 @@
 									newTile = new Tile(col + posX, row, String.fromCharCode(currUnicodeTile));
 								break;
 							case 1 : 
-								var int = arrShape[(col + 1) * (tileDim - 1)];
+								var _tmpTitleDim = tileDim - row;
+								var int = arrShape[(_tmpTitleDim - 1) + (col * tileDim)];
 								if(int === 1)
 									newTile = new Tile(col + posX, row, String.fromCharCode(currUnicodeTile));
 								break;
-							case 2 : 
+							/*case 2 : 
 								break;
 							case 3 : 
-								break;
+								break;*/
 						}
 
 						if(newTile instanceof Tile){

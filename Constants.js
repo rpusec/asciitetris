@@ -49,3 +49,8 @@ const KEYS = {
 	RIGHT: 39,
 };
 const MAX_ROTATE_TYPE = 3;
+const assets = {
+	bg: '&nbsp;',
+	newline: '<br/>',
+	wall: '#',
+};

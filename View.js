@@ -21,10 +21,10 @@ window.View = (function(){
 						break;
 					}
 				}
-				res += targetTile !== null ? targetTile.char : '&nbsp;';
+				res += targetTile !== null ? targetTile.char : assets.bg;
 			}
 
-			res += '<br/>';
+			res += assets.newline;
 		}
 
 		elemScreen.innerHTML = res;

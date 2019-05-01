@@ -3,6 +3,7 @@ window.Controller = (function(){
 	const arrPlayerTiles = [];
 
 	var posX = 0;
+	var posY = 0;
 	var currShapeIndex = Math.floor(Math.random() * tileShapes.length);
 	var rotationType = 0;
 
@@ -13,51 +14,68 @@ window.Controller = (function(){
 		view = new window.View();
 
 		for(var i = 0; i < dimensions.h; i++){
-			arrTiles.push(new Tile(0, i, '#'));
-			arrTiles.push(new Tile(dimensions.w, i, '#'));
+			arrTiles.push(new Tile(0, i, assets.wall));
+			arrTiles.push(new Tile(dimensions.w, i, assets.wall));
 		}
 
 		createPlayerTiles();
 
-		window.addEventListener('keydown', function(e){
-			var key = e.which || e.keyCode;
+		view.updateView(arrTiles);
+	}
 
-			for(var i = 0, j = arrPlayerTiles.length; i < j; i++){
-				var tile = arrPlayerTiles[i];
+	window.addEventListener('keydown', function(e){
+		var key = e.which || e.keyCode;
 
-				switch(key){
-					case KEYS.UP : 
-						break;
-					case KEYS.DOWN : 
-						break;
-					case KEYS.LEFT : 
-						tile.posX--;
-						break;
-					case KEYS.RIGHT : 
-						tile.posX++;
-						break;
-				}
-			}
-
-			switch(key){
-				case KEYS.UP : 
-					rotationType = (rotationType + 1) % (MAX_ROTATE_TYPE + 1);
-					rotatePlayerTiles();
-					break;
-				case KEYS.DOWN : 
-					break;
-				case KEYS.LEFT : 
-					posX--;
-					break;
-				case KEYS.RIGHT : 
-					posX++;
-					break;
-			}
-
-			view.updateView(arrTiles);
-		}, false);
+		switch(key){
+			case KEYS.UP : 
+				rotationType = (rotationType + 1) % (MAX_ROTATE_TYPE + 1);
+				rotatePlayerTiles();
+				break;
+			case KEYS.DOWN : 
+				moveDown(key);
+				break;
+			case KEYS.LEFT : 
+				moveLeft(key);
+				break;
+			case KEYS.RIGHT : 
+				moveRight(key);
+				break;
+		}
 
 		view.updateView(arrTiles);
+	}, false);
+
+	function moveDown(key){
+		posY++;
+		updatePosition(key);
+	}
+
+	function moveLeft(key){
+		posX--;
+		updatePosition(key);
+	}
+
+	function moveRight(key){
+		posX++;
+		updatePosition(key);
+	}
+
+	function updatePosition(key){
+		for(var i = 0, j = arrPlayerTiles.length; i < j; i++){
+			var tile = arrPlayerTiles[i];
+
+			switch(key){
+				case KEYS.DOWN :
+					tile.posY++; 
+					break;
+				case KEYS.LEFT : 
+					tile.posX--;
+					break;
+				case KEYS.RIGHT : 
+					tile.posX++;
+					break;
+			}
+		}
 	}
 
 	function createPlayerTiles(){
@@ -99,7 +117,7 @@ window.Controller = (function(){
 						break;
 				}
 				if(int === 1){
-					var newTile = new Tile(col + posX, row, String.fromCharCode(currUnicodeTile));
+					var newTile = new Tile(col + posX, row + posY, String.fromCharCode(currUnicodeTile));
 					arrTiles.push(newTile);
 					arrPlayerTiles.push(newTile);
 					newTile = null;

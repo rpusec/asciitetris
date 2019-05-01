@@ -6,6 +6,7 @@ window.Controller = (function(){
 	var posY = 0;
 	var currShapeIndex = Math.floor(Math.random() * tileShapes.length);
 	var rotationType = 0;
+	var fallInterval;
 
 	var currUnicodeTile = 65;
 	var view;
@@ -15,12 +16,17 @@ window.Controller = (function(){
 
 		for(var i = 0; i < dimensions.h; i++){
 			arrTiles.push(new Tile(0, i, assets.wall));
-			arrTiles.push(new Tile(dimensions.w, i, assets.wall));
+			arrTiles.push(new Tile(dimensions.w - 1, i, assets.wall));
 		}
+
+		for(var i = 1; i < dimensions.w - 1; i++)
+			arrTiles.push(new Tile(i, dimensions.h - 1, assets.wall));
 
 		createPlayerTiles();
 
 		view.updateView(arrTiles);
+
+		restartFall();
 	}
 
 	window.addEventListener('keydown', function(e){
@@ -32,32 +38,41 @@ window.Controller = (function(){
 				rotatePlayerTiles();
 				break;
 			case KEYS.DOWN : 
-				moveDown(key);
+				moveDown();
+				restartFall();
 				break;
 			case KEYS.LEFT : 
-				moveLeft(key);
+				moveLeft();
 				break;
 			case KEYS.RIGHT : 
-				moveRight(key);
+				moveRight();
 				break;
 		}
 
 		view.updateView(arrTiles);
 	}, false);
 
-	function moveDown(key){
+	function moveDown(){
 		posY++;
-		updatePosition(key);
+		updatePosition(KEYS.DOWN);
 	}
 
-	function moveLeft(key){
+	function moveLeft(){
 		posX--;
-		updatePosition(key);
+		updatePosition(KEYS.LEFT);
 	}
 
-	function moveRight(key){
+	function moveRight(){
 		posX++;
-		updatePosition(key);
+		updatePosition(KEYS.RIGHT);
+	}
+
+	function restartFall(){
+		clearInterval(fallInterval);
+		fallInterval = setInterval(function(){
+			moveDown();
+			view.updateView(arrTiles);			
+		}, 1000);
 	}
 
 	function updatePosition(key){

@@ -8,9 +8,9 @@ window.View = (function(){
 	View.prototype.updateView = function(arrTiles){
 		var res = "";
 
-		for(var row = 0; row <= dimensions.h; row++)
+		for(var row = 0; row < dimensions.h; row++)
 		{
-			for(var col = 0; col <= dimensions.w; col++)
+			for(var col = 0; col < dimensions.w; col++)
 			{
 				var targetTile = null;
 				for(var i = 0, j = arrTiles.length; i < j; i++)

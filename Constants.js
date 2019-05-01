@@ -1,6 +1,6 @@
 const dimensions = {
 	w: 20,
-	h: 20,
+	h: 25,
 };
 const maxTilesAmount = dimensions.w * dimensions.h;
 const tileDim = 4;

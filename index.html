@@ -39,8 +39,11 @@
 				LEFT: 37,
 				RIGHT: 39,
 			};
+			const MAX_ROTATE_TYPE = 3;
 
+			var posX = 0;
 			var currShapeIndex = Math.floor(Math.random() * tileShapes.length);
+			var rotationType = 0;
 			var elemScreen;
 
 			var currUnicodeTile = 65;
@@ -75,6 +78,21 @@
 						}
 					}
 
+					switch(key){
+						case KEYS.UP : 
+							rotationType = (rotationType + 1) % (MAX_ROTATE_TYPE + 1);
+							rotatePlayerTiles();
+							break;
+						case KEYS.DOWN : 
+							break;
+						case KEYS.LEFT : 
+							posX--;
+							break;
+						case KEYS.RIGHT : 
+							posX++;
+							break;
+					}
+
 					updateGraphics();
 				}, false);
 
@@ -107,19 +125,51 @@
 			}
 
 			function createPlayerTiles(){
-				var centerX = Math.floor(dimensions.w / 2) - Math.floor(tileDim / 2);
+				posX = Math.floor(dimensions.w / 2) - Math.floor(tileDim / 2);
+				rotationType = 0;
+				rotatePlayerTiles();
+			}
+
+			function rotatePlayerTiles(){
+				for(var i = 0, j = arrTiles.length; i < j; i++){
+					var tile = arrTiles[i];
+					if(arrPlayerTiles.indexOf(tile) !== -1){
+						arrTiles.splice(i, 1);
+						i--;
+						j--;
+					}
+				}
+
+				arrPlayerTiles.splice(0, arrPlayerTiles.length);
+
 				var arrShape = tileShapes[currShapeIndex];
-				var y = 0;
 
 				for(var row = 0; row <= tileDim; row++)
 				{
 					for(var col = 0; col <= tileDim; col++)
 					{
-						var int = arrShape[col + row * tileDim];
-						if(int === 1){
-							var newTile = new Tile(col + centerX, row, String.fromCharCode(currUnicodeTile));
+						var newTile;
+						switch(rotationType){
+							case 0 : 
+								var int = arrShape[col + row * tileDim];
+								if(int === 1)
+									newTile = new Tile(col + posX, row, String.fromCharCode(currUnicodeTile));
+								break;
+							case 1 : 
+								var int = arrShape[(col + 1) * (tileDim - 1)];
+								if(int === 1)
+									newTile = new Tile(col + posX, row, String.fromCharCode(currUnicodeTile));
+								break;
+							case 2 : 
+								break;
+							case 3 : 
+								break;
+						}
+
+						if(newTile instanceof Tile){
 							arrTiles.push(newTile);
 							arrPlayerTiles.push(newTile);
+							newTile = null;
 						}
 					}
 				}

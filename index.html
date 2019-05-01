@@ -39,7 +39,7 @@
 				LEFT: 37,
 				RIGHT: 39,
 			};
-			const MAX_ROTATE_TYPE = 2;
+			const MAX_ROTATE_TYPE = 3;
 
 			var posX = 0;
 			var currShapeIndex = Math.floor(Math.random() * tileShapes.length);
@@ -143,33 +143,27 @@
 				arrPlayerTiles.splice(0, arrPlayerTiles.length);
 
 				var arrShape = tileShapes[currShapeIndex];
-
 				for(var row = 0; row <= tileDim; row++)
 				{
 					for(var col = 0; col <= tileDim; col++)
 					{
-						var newTile;
+						var int = 0;
 						switch(rotationType){
 							case 0 : 
-								var int = arrShape[col + row * tileDim];
-								if(int === 1)
-									newTile = new Tile(col + posX, row, String.fromCharCode(currUnicodeTile));
+								int = arrShape[col + row * tileDim];
 								break;
 							case 1 : 
-								var int = arrShape[(tileDim - row - 1) + (col * tileDim)];
-								if(int === 1)
-									newTile = new Tile(col + posX, row, String.fromCharCode(currUnicodeTile));
+								int = arrShape[(tileDim - row - 1) + (col * tileDim)];
 								break;
 							case 2 : 
-								var int = arrShape[((tileDim - row) * tileDim - col) - 1];
-								if(int === 1)
-									newTile = new Tile(col + posX, row, String.fromCharCode(currUnicodeTile));
+								int = arrShape[((tileDim - row) * tileDim - col) - 1];
 								break;
-							/*case 3 : 
-								break;*/
+							case 3 : 
+								int = arrShape[((tileDim - col - 1) * tileDim) + row];
+								break;
 						}
-
-						if(newTile instanceof Tile){
+						if(int === 1){
+							var newTile = new Tile(col + posX, row, String.fromCharCode(currUnicodeTile));
 							arrTiles.push(newTile);
 							arrPlayerTiles.push(newTile);
 							newTile = null;

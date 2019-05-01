@@ -18,6 +18,7 @@
 			const maxTilesAmount = dimensions.w * dimensions.h;
 			const tileDim = 4;
 			const arrTiles = [];
+			const arrPlayerTiles = [];
 			const tileShapes = [
 				[
 					0,0,1,0,
@@ -39,11 +40,6 @@
 				RIGHT: 39,
 			};
 
-			const pos = {
-				x: Math.floor(dimensions.w / 2) - Math.floor(tileDim / 2),
-				y: 0,
-			};
-
 			var currShapeIndex = Math.floor(Math.random() * tileShapes.length);
 			var elemScreen;
 
@@ -57,22 +53,26 @@
 					arrTiles.push(new Tile(dimensions.w, i, '#'));
 				}
 
-				createMovableTile();
+				createPlayerTiles();
 
 				window.addEventListener('keydown', function(e){
 					var key = e.which || e.keyCode;
 
-					switch(key){
-						case KEYS.UP : 
-							break;
-						case KEYS.DOWN : 
-							break;
-						case KEYS.LEFT : 
-							pos.x--;
-							break;
-						case KEYS.RIGHT : 
-							pos.x++;
-							break;
+					for(var i = 0, j = arrPlayerTiles.length; i < j; i++){
+						var tile = arrPlayerTiles[i];
+
+						switch(key){
+							case KEYS.UP : 
+								break;
+							case KEYS.DOWN : 
+								break;
+							case KEYS.LEFT : 
+								tile.posX--;
+								break;
+							case KEYS.RIGHT : 
+								tile.posX++;
+								break;
+						}
 					}
 
 					updateGraphics();
@@ -106,7 +106,8 @@
 				elemScreen.innerHTML = res;
 			}
 
-			function createMovableTile(){
+			function createPlayerTiles(){
+				var centerX = Math.floor(dimensions.w / 2) - Math.floor(tileDim / 2);
 				var arrShape = tileShapes[currShapeIndex];
 				var y = 0;
 
@@ -115,7 +116,11 @@
 					for(var col = 0; col <= tileDim; col++)
 					{
 						var int = arrShape[col + row * tileDim];
-						int === 1 && arrTiles.push(new Tile(col + pos.x, row, String.fromCharCode(currUnicodeTile)));
+						if(int === 1){
+							var newTile = new Tile(col + centerX, row, String.fromCharCode(currUnicodeTile));
+							arrTiles.push(newTile);
+							arrPlayerTiles.push(newTile);
+						}
 					}
 				}
 			}

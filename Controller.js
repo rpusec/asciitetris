@@ -4,11 +4,11 @@ window.Controller = (function(){
 
 	var posX = 0;
 	var posY = 0;
-	var currShapeIndex = Math.floor(Math.random() * tileShapes.length);
+	var currShapeIndex;
 	var rotationType = 0;
 	var fallInterval;
 
-	var currUnicodeTile = 65;
+	var currUnicodeTile = 64;
 	var view;
 
 	function Controller(){
@@ -23,9 +23,7 @@ window.Controller = (function(){
 			arrTiles.push(new Tile(i, dimensions.h - 1, assets.wall));
 
 		createPlayerTiles();
-
 		view.updateView(arrTiles);
-
 		restartFall();
 	}
 
@@ -53,8 +51,13 @@ window.Controller = (function(){
 	}, false);
 
 	function moveDown(){
-		posY++;
-		updatePosition(KEYS.DOWN);
+		if(checkCollision()){
+			createPlayerTiles();
+		}
+		else{
+			posY++;
+			updatePosition(KEYS.DOWN);
+		}
 	}
 
 	function moveLeft(){
@@ -71,7 +74,7 @@ window.Controller = (function(){
 		clearInterval(fallInterval);
 		fallInterval = setInterval(function(){
 			moveDown();
-			view.updateView(arrTiles);			
+			view.updateView(arrTiles);
 		}, 1000);
 	}
 
@@ -94,8 +97,12 @@ window.Controller = (function(){
 	}
 
 	function createPlayerTiles(){
+		arrPlayerTiles.splice(0, arrPlayerTiles.length);
 		posX = Math.floor(dimensions.w / 2) - Math.floor(tileDim / 2);
+		posY = 0;
 		rotationType = 0;
+		currShapeIndex = Math.floor(Math.random() * tileShapes.length);
+		currUnicodeTile++;
 		rotatePlayerTiles();
 	}
 
@@ -139,6 +146,23 @@ window.Controller = (function(){
 				}
 			}
 		}
+	}
+
+	function checkCollision(){
+		for(var ti = 0, tiLength = arrTiles.length; ti < tiLength; ti++){
+			var tile = arrTiles[ti];
+			if(arrPlayerTiles.indexOf(tile) !== -1)
+				continue;
+
+			for(var pti = 0, ptiLength = arrPlayerTiles.length; pti < ptiLength; pti++){
+				var playerTile = arrPlayerTiles[pti];
+				var nextPosY = playerTile.posY + 1;
+				if(tile.posX === playerTile.posX && tile.posY === nextPosY){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	return Controller;

@@ -15,10 +15,6 @@
 				w: 20,
 				h: 20,
 			};
-			const assets = {
-				bg: '&nbsp;',
-				wall: '#',
-			};
 			const maxTilesAmount = dimensions.w * dimensions.h;
 			const tileDim = 4;
 			const arrTiles = [];
@@ -56,6 +52,13 @@
 			window.onload = function(){
 				elemScreen = document.getElementsByTagName('body')[0];
 
+				for(var i = 0; i < dimensions.h; i++){
+					arrTiles.push(new Tile(0, i, '#'));
+					arrTiles.push(new Tile(dimensions.w, i, '#'));
+				}
+
+				createMovableTile();
+
 				window.addEventListener('keydown', function(e){
 					var key = e.which || e.keyCode;
 
@@ -72,8 +75,6 @@
 							break;
 					}
 
-					console.log(JSON.stringify(pos));
-
 					updateGraphics();
 				}, false);
 
@@ -81,36 +82,48 @@
 			}
 
 			function updateGraphics(){
-				var currShape = tileShapes[currShapeIndex];
-				var tileIndex = 0;
+				var res = "";
 
-				arrTiles.splice(0, arrTiles.length);
-
-				for(var i = 0; i < maxTilesAmount; i++){
-					if((i % dimensions.w) >= pos.x && (i % dimensions.w) <= (pos.x + tileDim - 1) && i <= dimensions.w * tileDim){
-						var t = currShape[tileIndex];
-						tileIndex++;
-						if(t == 1){
-							arrTiles.push(String.fromCharCode(currUnicodeTile));
-							continue;
+				for(var row = 0; row <= dimensions.h; row++)
+				{
+					for(var col = 0; col <= dimensions.w; col++)
+					{
+						var targetTile = null;
+						for(var i = 0, j = arrTiles.length; i < j; i++)
+						{
+							var tile = arrTiles[i];
+							if(tile.posX === col && tile.posY === row){
+								targetTile = tile;
+								break;
+							}
 						}
+						res += targetTile !== null ? targetTile.char : '&nbsp;';
 					}
 
-					if((i % dimensions.w) === 0 || ((i + 1) % dimensions.w) === 0){
-						arrTiles.push(assets.wall);
-					}
-					else{
-						arrTiles.push(assets.bg);
-					}
+					res += '<br/>';
 				}
 
-				var res = '';
-				for(var i = 0; i < maxTilesAmount; i++){
-					res += arrTiles[i];
-					if(((i + 1) % dimensions.w) === 0)
-						res += '<br/>';
-				}
 				elemScreen.innerHTML = res;
+			}
+
+			function createMovableTile(){
+				var arrShape = tileShapes[currShapeIndex];
+				var y = 0;
+
+				for(var row = 0; row <= tileDim; row++)
+				{
+					for(var col = 0; col <= tileDim; col++)
+					{
+						var int = arrShape[col + row * tileDim];
+						int === 1 && arrTiles.push(new Tile(col + pos.x, row, String.fromCharCode(currUnicodeTile)));
+					}
+				}
+			}
+
+			function Tile(posX, posY, char){
+				this.posX = posX;
+				this.posY = posY;
+				this.char = char;
 			}
 		}());
 	</script>

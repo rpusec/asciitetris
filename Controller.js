@@ -129,9 +129,9 @@ window.Controller = (function(){
 		arrPlayerTiles.splice(0, arrPlayerTiles.length);
 
 		var arrShape = tileShapes[currShapeIndex];
-		for(var row = 0; row <= tileDim; row++)
+		for(var row = 0; row < tileDim; row++)
 		{
-			for(var col = 0; col <= tileDim; col++)
+			for(var col = 0; col < tileDim; col++)
 			{
 				var int = 0;
 				switch(rotationType){

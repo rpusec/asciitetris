@@ -51,7 +51,7 @@ window.Controller = (function(){
 	}, false);
 
 	function moveDown(){
-		if(checkCollision()){
+		if(checkVerticalCollision()){
 			createPlayerTiles();
 		}
 		else{
@@ -61,13 +61,17 @@ window.Controller = (function(){
 	}
 
 	function moveLeft(){
-		posX--;
-		updatePosition(KEYS.LEFT);
+		if(!checkHorizontalCollision(KEYS.LEFT)){
+			posX--;
+			updatePosition(KEYS.LEFT);
+		}
 	}
 
 	function moveRight(){
-		posX++;
-		updatePosition(KEYS.RIGHT);
+		if(!checkHorizontalCollision(KEYS.RIGHT)){
+			posX++;
+			updatePosition(KEYS.RIGHT);
+		}
 	}
 
 	function restartFall(){
@@ -148,7 +152,7 @@ window.Controller = (function(){
 		}
 	}
 
-	function checkCollision(){
+	function checkVerticalCollision(){
 		for(var ti = 0, tiLength = arrTiles.length; ti < tiLength; ti++){
 			var tile = arrTiles[ti];
 			if(arrPlayerTiles.indexOf(tile) !== -1)
@@ -157,9 +161,26 @@ window.Controller = (function(){
 			for(var pti = 0, ptiLength = arrPlayerTiles.length; pti < ptiLength; pti++){
 				var playerTile = arrPlayerTiles[pti];
 				var nextPosY = playerTile.posY + 1;
-				if(tile.posX === playerTile.posX && tile.posY === nextPosY){
+				if(tile.posX === playerTile.posX && tile.posY === nextPosY)
 					return true;
-				}
+			}
+		}
+		return false;
+	}
+
+	function checkHorizontalCollision(key){
+		for(var ti = 0, tiLength = arrTiles.length; ti < tiLength; ti++){
+			var tile = arrTiles[ti];
+			if(arrPlayerTiles.indexOf(tile) !== -1)
+				continue;
+
+			for(var pti = 0, ptiLength = arrPlayerTiles.length; pti < ptiLength; pti++){
+				var playerTile = arrPlayerTiles[pti];
+				var nextLeftPosX = playerTile.posX - 1;
+				var nextRightPosX = playerTile.posX + 1;
+				if(	tile.posY === playerTile.posY && 
+					((key === KEYS.LEFT && tile.posX === nextLeftPosX) || (key === KEYS.RIGHT && tile.posX === nextRightPosX)))
+					return true;
 			}
 		}
 		return false;

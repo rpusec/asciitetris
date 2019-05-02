@@ -57,8 +57,9 @@ const KEYS = {
 const SIDES = {
 	LEFT: 0,
 	RIGHT: 1,
-	DOWN: 2,
+	UP: 2,
 };
+const SIDES_LENGTH = Object.keys(SIDES).length;
 const MAX_ROTATE_TYPE = 3;
 const ASSETS = {
 	bg: '&nbsp;',

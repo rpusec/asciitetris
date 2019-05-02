@@ -1,6 +1,6 @@
 window.Controller = (function(){
-	const arrTiles = [];
-	const arrPlayerTiles = [];
+	var arrTiles = [];
+	var arrPlayerTiles = [];
 
 	var currPosX = 0;
 	var currPosY = 0;
@@ -126,7 +126,7 @@ window.Controller = (function(){
 			}
 		}
 
-		arrPlayerTiles.splice(0, arrPlayerTiles.length);
+		var oldArrPlayerTiles = arrPlayerTiles.splice(0, arrPlayerTiles.length);
 
 		var arrShape = tileShapes[currShapeIndex];
 		for(var row = 0; row < tileDim; row++)
@@ -156,13 +156,63 @@ window.Controller = (function(){
 			}
 		}
 
-		var side;
-		while((side = checkWallIntersection()) !== null){
-			for(var i = 0, j = arrPlayerTiles.length; i < j; i++){
-				var tile = arrPlayerTiles[i];
-				side === SIDES.LEFT ? tile.posX++ : tile.posX--;
+		var retryTimes = Math.ceil(tileDim / 2);
+		var retryCount = 0;
+		var retryType = 0;
+		var rotateLegit = true;
+
+		while(checkTileIntersection()){
+			if(retryType === SIDES_LENGTH){
+				rotateLegit = false;
+				break;
+			}
+
+			if(retryCount < retryTimes){
+				for(var i = 0, j = arrPlayerTiles.length; i < j; i++){
+					var tile = arrPlayerTiles[i];
+
+					if(typeof tile._posX === 'undefined' && typeof tile._posY === 'undefined'){
+						tile._posX = tile.posX;
+						tile._posY = tile.posY;
+					}
+
+					if(retryType === SIDES.LEFT)
+						tile.posX--;
+					else if(retryType === SIDES.RIGHT)
+						tile.posX++;
+					if(retryType === SIDES.UP)
+						tile.posY--;
+				}
+
+				if(retryType === SIDES.LEFT)
+					currPosX--;
+				else if(retryType === SIDES.RIGHT)
+					currPosX++;
+				if(retryType === SIDES.UP)
+					currPosY--;
+
+				retryCount++;
+			}
+			else{
+				retryCount = 0;
+				retryType++;
+				for(var i = 0, j = arrPlayerTiles.length; i < j; i++){
+					var tile = arrPlayerTiles[i];
+					tile.posX = tile._posX;
+					tile.posY = tile._posY;
+				}
 			}
 		}
+
+		if(rotateLegit){
+			for(var i = 0, j = arrPlayerTiles.length; i < j; i++){
+				var tile = arrPlayerTiles[i];
+				delete tile._posX;
+				delete tile._posY;
+			}
+		}
+		else
+			arrPlayerTiles = oldArrPlayerTiles;
 	}
 
 	/**
@@ -208,19 +258,19 @@ window.Controller = (function(){
 		return false;
 	}
 
-	function checkWallIntersection(){
+	function checkTileIntersection(){
 		for(var ti = 0, tiLength = arrTiles.length; ti < tiLength; ti++){
 			var tile = arrTiles[ti];
-			if(tile.type !== TILE_TYPES.WALL)
+			if(arrPlayerTiles.indexOf(tile) !== -1)
 				continue;
 
 			for(var pti = 0, ptiLength = arrPlayerTiles.length; pti < ptiLength; pti++){
 				var playerTile = arrPlayerTiles[pti];
 				if(tile.posX === playerTile.posX && tile.posY === playerTile.posY)
-					return (tile.posX < dimensions.w / 2) ? SIDES.LEFT : SIDES.RIGHT;
+					return true;
 			}
 		}
-		return null;
+		return false;
 	}
 
 	return Controller;

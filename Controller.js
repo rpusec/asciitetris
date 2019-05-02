@@ -100,6 +100,9 @@ window.Controller = (function(){
 		}
 	}
 
+	/**
+	 * Creates new falling tiles. 
+	 */
 	function createPlayerTiles(){
 		arrPlayerTiles.splice(0, arrPlayerTiles.length);
 		posX = Math.floor(dimensions.w / 2) - Math.floor(tileDim / 2);
@@ -110,6 +113,9 @@ window.Controller = (function(){
 		rotatePlayerTiles();
 	}
 
+	/**
+	 * Rotates the falling tiles clockwise. 
+	 */
 	function rotatePlayerTiles(){
 		for(var i = 0, j = arrTiles.length; i < j; i++){
 			var tile = arrTiles[i];
@@ -146,12 +152,15 @@ window.Controller = (function(){
 					var newTile = new Tile(col + posX, row + posY, String.fromCharCode(currUnicodeTile));
 					arrTiles.push(newTile);
 					arrPlayerTiles.push(newTile);
-					newTile = null;
 				}
 			}
 		}
 	}
 
+	/**
+	 * Checks whether one of falling tiles will collide with a tile beneath a falling tile. 
+	 * @return {Boolean} True if collision happened, false otherwise.
+	 */
 	function checkVerticalCollision(){
 		for(var ti = 0, tiLength = arrTiles.length; ti < tiLength; ti++){
 			var tile = arrTiles[ti];
@@ -168,6 +177,11 @@ window.Controller = (function(){
 		return false;
 	}
 
+	/**
+	 * Checjs whether a falling tile will collide with another tile on the left or right side
+	 * @param  {Integer} key Can be either KEYS.LEFT to check for possible collision on the left side, or KEYS.RIGHT for the right side. 
+	 * @return {Boolean} True if collision happened, false otherwise.
+	 */
 	function checkHorizontalCollision(key){
 		for(var ti = 0, tiLength = arrTiles.length; ti < tiLength; ti++){
 			var tile = arrTiles[ti];

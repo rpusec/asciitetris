@@ -2,8 +2,8 @@ window.Controller = (function(){
 	const arrTiles = [];
 	const arrPlayerTiles = [];
 
-	var posX = 0;
-	var posY = 0;
+	var currPosX = 0;
+	var currPosY = 0;
 	var currShapeIndex;
 	var rotationType = 0;
 	var fallInterval;
@@ -15,12 +15,12 @@ window.Controller = (function(){
 		view = new window.View();
 
 		for(var i = 0; i < dimensions.h; i++){
-			arrTiles.push(new Tile(0, i, assets.wall));
-			arrTiles.push(new Tile(dimensions.w - 1, i, assets.wall));
+			arrTiles.push(new Tile(0, i, ASSETS.wall, TILE_TYPES.WALL));
+			arrTiles.push(new Tile(dimensions.w - 1, i, ASSETS.wall, TILE_TYPES.WALL));
 		}
 
 		for(var i = 1; i < dimensions.w - 1; i++)
-			arrTiles.push(new Tile(i, dimensions.h - 1, assets.wall));
+			arrTiles.push(new Tile(i, dimensions.h - 1, ASSETS.wall, TILE_TYPES.FLOOR));
 
 		createPlayerTiles();
 		view.updateView(arrTiles);
@@ -55,21 +55,21 @@ window.Controller = (function(){
 			createPlayerTiles();
 		}
 		else{
-			posY++;
+			currPosY++;
 			updatePosition(KEYS.DOWN);
 		}
 	}
 
 	function moveLeft(){
 		if(!checkHorizontalCollision(KEYS.LEFT)){
-			posX--;
+			currPosX--;
 			updatePosition(KEYS.LEFT);
 		}
 	}
 
 	function moveRight(){
 		if(!checkHorizontalCollision(KEYS.RIGHT)){
-			posX++;
+			currPosX++;
 			updatePosition(KEYS.RIGHT);
 		}
 	}
@@ -105,8 +105,8 @@ window.Controller = (function(){
 	 */
 	function createPlayerTiles(){
 		arrPlayerTiles.splice(0, arrPlayerTiles.length);
-		posX = Math.floor(dimensions.w / 2) - Math.floor(tileDim / 2);
-		posY = 0;
+		currPosX = Math.floor(dimensions.w / 2) - Math.floor(tileDim / 2);
+		currPosY = 0;
 		rotationType = 0;
 		currShapeIndex = Math.floor(Math.random() * tileShapes.length);
 		currUnicodeTile++;
@@ -149,10 +149,18 @@ window.Controller = (function(){
 						break;
 				}
 				if(int === 1){
-					var newTile = new Tile(col + posX, row + posY, String.fromCharCode(currUnicodeTile));
+					var newTile = new Tile(col + currPosX, row + currPosY, String.fromCharCode(currUnicodeTile), TILE_TYPES.TILE);
 					arrTiles.push(newTile);
 					arrPlayerTiles.push(newTile);
 				}
+			}
+		}
+
+		var side;
+		while((side = checkWallIntersection()) !== null){
+			for(var i = 0, j = arrPlayerTiles.length; i < j; i++){
+				var tile = arrPlayerTiles[i];
+				side === SIDES.LEFT ? tile.posX++ : tile.posX--;
 			}
 		}
 	}
@@ -178,7 +186,7 @@ window.Controller = (function(){
 	}
 
 	/**
-	 * Checjs whether a falling tile will collide with another tile on the left or right side
+	 * Checks whether a falling tile will collide with another tile on the left or right side
 	 * @param  {Integer} key Can be either KEYS.LEFT to check for possible collision on the left side, or KEYS.RIGHT for the right side. 
 	 * @return {Boolean} True if collision happened, false otherwise.
 	 */
@@ -198,6 +206,21 @@ window.Controller = (function(){
 			}
 		}
 		return false;
+	}
+
+	function checkWallIntersection(){
+		for(var ti = 0, tiLength = arrTiles.length; ti < tiLength; ti++){
+			var tile = arrTiles[ti];
+			if(tile.type !== TILE_TYPES.WALL)
+				continue;
+
+			for(var pti = 0, ptiLength = arrPlayerTiles.length; pti < ptiLength; pti++){
+				var playerTile = arrPlayerTiles[pti];
+				if(tile.posX === playerTile.posX && tile.posY === playerTile.posY)
+					return (tile.posX < dimensions.w / 2) ? SIDES.LEFT : SIDES.RIGHT;
+			}
+		}
+		return null;
 	}
 
 	return Controller;

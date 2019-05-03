@@ -1,9 +1,7 @@
 window.Controller = (function(){
 	var arrTiles = [];
-	var arrPlayerTiles = [];
+	var playerTiles;
 
-	var currPosX = 0;
-	var currPosY = 0;
 	var currShapeIndex;
 	var rotationType = 0;
 	var fallInterval;
@@ -13,6 +11,8 @@ window.Controller = (function(){
 
 	function Controller(){
 		view = new window.View();
+
+		playerTiles = new TileGroup();
 
 		for(var i = 0; i < dimensions.h; i++){
 			arrTiles.push(new Tile(0, i, ASSETS.wall, TILE_TYPES.WALL));
@@ -51,27 +51,20 @@ window.Controller = (function(){
 	}, false);
 
 	function moveDown(){
-		if(checkVerticalCollision()){
+		if(checkVerticalCollision())
 			createPlayerTiles();
-		}
-		else{
-			currPosY++;
-			updatePosition(KEYS.DOWN);
-		}
+		else
+			playerTiles.moveDown();
 	}
 
 	function moveLeft(){
-		if(!checkHorizontalCollision(KEYS.LEFT)){
-			currPosX--;
-			updatePosition(KEYS.LEFT);
-		}
+		if(!checkHorizontalCollision(KEYS.LEFT))
+			playerTiles.moveLeft();
 	}
 
 	function moveRight(){
-		if(!checkHorizontalCollision(KEYS.RIGHT)){
-			currPosX++;
-			updatePosition(KEYS.RIGHT);
-		}
+		if(!checkHorizontalCollision(KEYS.RIGHT))
+			playerTiles.moveRight();
 	}
 
 	function restartFall(){
@@ -82,31 +75,13 @@ window.Controller = (function(){
 		}, 1000);
 	}
 
-	function updatePosition(key){
-		for(var i = 0, j = arrPlayerTiles.length; i < j; i++){
-			var tile = arrPlayerTiles[i];
-
-			switch(key){
-				case KEYS.DOWN :
-					tile.posY++; 
-					break;
-				case KEYS.LEFT : 
-					tile.posX--;
-					break;
-				case KEYS.RIGHT : 
-					tile.posX++;
-					break;
-			}
-		}
-	}
-
 	/**
 	 * Creates new falling tiles. 
 	 */
 	function createPlayerTiles(){
-		arrPlayerTiles.splice(0, arrPlayerTiles.length);
-		currPosX = Math.floor(dimensions.w / 2) - Math.floor(tileDim / 2);
-		currPosY = 0;
+		playerTiles.list.splice(0, playerTiles.list.length);
+		playerTiles.posX = Math.floor(dimensions.w / 2) - Math.floor(tileDim / 2);
+		playerTiles.posY = 0;
 		rotationType = 0;
 		currShapeIndex = Math.floor(Math.random() * tileShapes.length);
 		currUnicodeTile++;
@@ -119,14 +94,14 @@ window.Controller = (function(){
 	function rotatePlayerTiles(){
 		for(var i = 0, j = arrTiles.length; i < j; i++){
 			var tile = arrTiles[i];
-			if(arrPlayerTiles.indexOf(tile) !== -1){
+			if(playerTiles.list.indexOf(tile) !== -1){
 				arrTiles.splice(i, 1);
 				i--;
 				j--;
 			}
 		}
 
-		var oldArrPlayerTiles = arrPlayerTiles.splice(0, arrPlayerTiles.length);
+		var oldplayerTiles = playerTiles.list.splice(0, playerTiles.list.length);
 
 		var arrShape = tileShapes[currShapeIndex];
 		for(var row = 0; row < tileDim; row++)
@@ -149,14 +124,14 @@ window.Controller = (function(){
 						break;
 				}
 				if(int === 1){
-					var newTile = new Tile(col + currPosX, row + currPosY, String.fromCharCode(currUnicodeTile), TILE_TYPES.TILE);
+					var newTile = new Tile(col + playerTiles.posX, row + playerTiles.posY, String.fromCharCode(currUnicodeTile), TILE_TYPES.TILE);
 					arrTiles.push(newTile);
-					arrPlayerTiles.push(newTile);
+					playerTiles.list.push(newTile);
 				}
 			}
 		}
 
-		var retryTimes = Math.ceil(tileDim / 2);
+		/*var retryTimes = Math.ceil(tileDim / 2);
 		var retryCount = 0;
 		var retryType = 0;
 		var rotateLegit = true;
@@ -168,8 +143,8 @@ window.Controller = (function(){
 			}
 
 			if(retryCount < retryTimes){
-				for(var i = 0, j = arrPlayerTiles.length; i < j; i++){
-					var tile = arrPlayerTiles[i];
+				for(var i = 0, j = playerTiles.list.length; i < j; i++){
+					var tile = playerTiles.list[i];
 
 					if(typeof tile._posX === 'undefined' && typeof tile._posY === 'undefined'){
 						tile._posX = tile.posX;
@@ -185,19 +160,19 @@ window.Controller = (function(){
 				}
 
 				if(retryType === SIDES.LEFT)
-					currPosX--;
+					playerTiles.posX--;
 				else if(retryType === SIDES.RIGHT)
-					currPosX++;
+					playerTiles.posX++;
 				if(retryType === SIDES.UP)
-					currPosY--;
+					playerTiles.posY--;
 
 				retryCount++;
 			}
 			else{
 				retryCount = 0;
 				retryType++;
-				for(var i = 0, j = arrPlayerTiles.length; i < j; i++){
-					var tile = arrPlayerTiles[i];
+				for(var i = 0, j = playerTiles.list.length; i < j; i++){
+					var tile = playerTiles.list[i];
 					tile.posX = tile._posX;
 					tile.posY = tile._posY;
 				}
@@ -205,14 +180,14 @@ window.Controller = (function(){
 		}
 
 		if(rotateLegit){
-			for(var i = 0, j = arrPlayerTiles.length; i < j; i++){
-				var tile = arrPlayerTiles[i];
+			for(var i = 0, j = playerTiles.list.length; i < j; i++){
+				var tile = playerTiles.list[i];
 				delete tile._posX;
 				delete tile._posY;
 			}
 		}
 		else
-			arrPlayerTiles = oldArrPlayerTiles;
+			playerTiles.list = oldplayerTiles;*/
 	}
 
 	/**
@@ -222,11 +197,11 @@ window.Controller = (function(){
 	function checkVerticalCollision(){
 		for(var ti = 0, tiLength = arrTiles.length; ti < tiLength; ti++){
 			var tile = arrTiles[ti];
-			if(arrPlayerTiles.indexOf(tile) !== -1)
+			if(playerTiles.list.indexOf(tile) !== -1)
 				continue;
 
-			for(var pti = 0, ptiLength = arrPlayerTiles.length; pti < ptiLength; pti++){
-				var playerTile = arrPlayerTiles[pti];
+			for(var pti = 0, ptiLength = playerTiles.list.length; pti < ptiLength; pti++){
+				var playerTile = playerTiles.list[pti];
 				var nextPosY = playerTile.posY + 1;
 				if(tile.posX === playerTile.posX && tile.posY === nextPosY)
 					return true;
@@ -243,11 +218,11 @@ window.Controller = (function(){
 	function checkHorizontalCollision(key){
 		for(var ti = 0, tiLength = arrTiles.length; ti < tiLength; ti++){
 			var tile = arrTiles[ti];
-			if(arrPlayerTiles.indexOf(tile) !== -1)
+			if(playerTiles.list.indexOf(tile) !== -1)
 				continue;
 
-			for(var pti = 0, ptiLength = arrPlayerTiles.length; pti < ptiLength; pti++){
-				var playerTile = arrPlayerTiles[pti];
+			for(var pti = 0, ptiLength = playerTiles.list.length; pti < ptiLength; pti++){
+				var playerTile = playerTiles.list[pti];
 				var nextLeftPosX = playerTile.posX - 1;
 				var nextRightPosX = playerTile.posX + 1;
 				if(	tile.posY === playerTile.posY && 
@@ -261,11 +236,11 @@ window.Controller = (function(){
 	function checkTileIntersection(){
 		for(var ti = 0, tiLength = arrTiles.length; ti < tiLength; ti++){
 			var tile = arrTiles[ti];
-			if(arrPlayerTiles.indexOf(tile) !== -1)
+			if(playerTiles.list.indexOf(tile) !== -1)
 				continue;
 
-			for(var pti = 0, ptiLength = arrPlayerTiles.length; pti < ptiLength; pti++){
-				var playerTile = arrPlayerTiles[pti];
+			for(var pti = 0, ptiLength = playerTiles.list.length; pti < ptiLength; pti++){
+				var playerTile = playerTiles.list[pti];
 				if(tile.posX === playerTile.posX && tile.posY === playerTile.posY)
 					return true;
 			}

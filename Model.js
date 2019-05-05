@@ -1,9 +1,8 @@
 (function(){
 
-	function Tile(posX, posY, char, type){
+	function Tile(posX, posY, type){
 		this.posX = posX;
 		this.posY = posY;
-		this.char = char;
 		this.type = type;
 	}
 

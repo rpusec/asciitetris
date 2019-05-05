@@ -62,13 +62,7 @@ const SIDES = {
 };
 const SIDES_LENGTH = Object.keys(SIDES).length;
 const MAX_ROTATE_TYPE = 3;
-const ASSETS = {
-	bg: '&nbsp;',
-	newline: '<br/>',
-	wall: '#',
-};
 const TILE_TYPES = {
 	WALL: 0,
-	FLOOR: 1,
-	TILE: 2,
+	TILE: 1,
 };

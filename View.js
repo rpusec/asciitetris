@@ -1,8 +1,27 @@
 window.View = (function(){
+	const ASSETS = {
+		BG: '&nbsp;',
+		NEW_LINE: '<br/>',
+		WALL: '#',
+	};
+
 	var elemScreen;
+	var currUnicodeTile = 0;
+	var countUnicodeTile = 0;
+	var baseUnicodeTile = 65;
+	var fallTileChar = null;
 
 	function View(){
 		elemScreen = document.getElementsByTagName('body')[0];
+	}
+
+	View.prototype.updatePlayerTileSkin = function(){
+		currUnicodeTile = baseUnicodeTile + countUnicodeTile;
+		if(countUnicodeTile < 25)
+			countUnicodeTile++;
+		else
+			countUnicodeTile = 0;
+		fallTileChar = String.fromCharCode(currUnicodeTile);
 	}
 
 	View.prototype.updateView = function(arrTiles){
@@ -21,10 +40,20 @@ window.View = (function(){
 						break;
 					}
 				}
-				res += targetTile !== null ? targetTile.char : ASSETS.bg;
+				if(targetTile !== null){
+					if(targetTile.type === TILE_TYPES.WALL){
+						res += ASSETS.WALL;
+					}
+					else{
+						if(typeof targetTile.char !== 'string')
+							targetTile.char = fallTileChar;
+						res += targetTile.char;
+					}
+				}
+				else
+					res += ASSETS.BG;
 			}
-
-			res += ASSETS.newline;
+			res += ASSETS.NEW_LINE;
 		}
 
 		elemScreen.innerHTML = res;

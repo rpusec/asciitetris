@@ -1,12 +1,9 @@
 window.Controller = (function(){
 	var arrTiles = [];
 	var playerTiles;
-
 	var currShapeIndex;
 	var rotationType = 0;
 	var fallInterval;
-
-	var currUnicodeTile = 64;
 	var view;
 
 	function Controller(){
@@ -15,12 +12,12 @@ window.Controller = (function(){
 		playerTiles = new TileGroup();
 
 		for(var i = 0; i < dimensions.h; i++){
-			arrTiles.push(new Tile(0, i, ASSETS.wall, TILE_TYPES.WALL));
-			arrTiles.push(new Tile(dimensions.w - 1, i, ASSETS.wall, TILE_TYPES.WALL));
+			arrTiles.push(new Tile(0, i, TILE_TYPES.WALL));
+			arrTiles.push(new Tile(dimensions.w - 1, i, TILE_TYPES.WALL));
 		}
 
 		for(var i = 1; i < dimensions.w - 1; i++)
-			arrTiles.push(new Tile(i, dimensions.h - 1, ASSETS.wall, TILE_TYPES.FLOOR));
+			arrTiles.push(new Tile(i, dimensions.h - 1, TILE_TYPES.WALL));
 
 		createPlayerTiles();
 		view.updateView(arrTiles);
@@ -84,7 +81,7 @@ window.Controller = (function(){
 		playerTiles.posY = 0;
 		rotationType = 0;
 		currShapeIndex = Math.floor(Math.random() * tileShapes.length);
-		currUnicodeTile++;
+		view.updatePlayerTileSkin();
 		rotatePlayerTiles();
 	}
 
@@ -116,7 +113,7 @@ window.Controller = (function(){
 						break;
 				}
 				if(int === 1){
-					var newTile = new Tile(col + playerTiles.posX, row + playerTiles.posY, String.fromCharCode(currUnicodeTile), TILE_TYPES.TILE);
+					var newTile = new Tile(col + playerTiles.posX, row + playerTiles.posY, TILE_TYPES.TILE);
 					arrTiles.push(newTile);
 					playerTiles.list.push(newTile);
 				}

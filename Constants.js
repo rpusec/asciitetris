@@ -6,6 +6,12 @@ const maxTilesAmount = dimensions.w * dimensions.h;
 const tileDim = 4;
 const tileShapes = [
 	[
+		0,0,1,0,
+		0,0,1,0,
+		0,0,1,0,
+		0,0,1,0,
+	],
+	[
 		0,1,0,0,
 		0,1,1,0,
 		0,0,1,0,
@@ -16,12 +22,6 @@ const tileShapes = [
 		0,1,1,0,
 		0,1,0,0,
 		0,0,0,0,
-	],
-	[
-		0,0,1,0,
-		0,0,1,0,
-		0,0,1,0,
-		0,0,1,0,
 	],
 	[
 		0,0,0,0,

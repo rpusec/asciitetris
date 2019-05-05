@@ -92,15 +92,7 @@ window.Controller = (function(){
 	 * Rotates the falling tiles clockwise. 
 	 */
 	function rotatePlayerTiles(){
-		for(var i = 0, j = arrTiles.length; i < j; i++){
-			var tile = arrTiles[i];
-			if(playerTiles.list.indexOf(tile) !== -1){
-				arrTiles.splice(i, 1);
-				i--;
-				j--;
-			}
-		}
-
+		erasePlayerTiles();
 		var oldplayerTiles = playerTiles.list.splice(0, playerTiles.list.length);
 
 		var arrShape = tileShapes[currShapeIndex];
@@ -131,7 +123,7 @@ window.Controller = (function(){
 			}
 		}
 
-		var retryTimes = Math.ceil(tileDim / 2);
+		var retryTimes = tileDim;
 		var retryCount = 0;
 		var retryType = 0;
 		var rotateLegit = true;
@@ -148,22 +140,22 @@ window.Controller = (function(){
 				break;
 			}
 
-			centerX = playerTiles.posX + Math.ceil(tileDim / 2);
-			centerY = playerTiles.posY + Math.ceil(tileDim / 2);
-
 			if(retryCount < retryTimes){
 				if(tempPosX === null && tempPosY === null){
 					tempPosX = playerTiles.posX;
 					tempPosY = playerTiles.posY;
 				}
 
-				if(retryType === SIDES.LEFT && colTile.posX > tempPosX)
+				centerX = tempPosX + Math.ceil(tileDim / 2);
+				centerY = tempPosY + Math.ceil(tileDim / 2);
+
+				if(retryType === SIDES.LEFT && colTile.posX >= centerX)
 					playerTiles.posX--;
-				else if(retryType === SIDES.RIGHT && colTile.posX < tempPosX)
+				else if(retryType === SIDES.RIGHT && colTile.posX < centerX)
 					playerTiles.posX++;
-				else if(retryType === SIDES.UP && colTile.posY > tempPosY)
+				else if(retryType === SIDES.UP && colTile.posY >= centerY)
 					playerTiles.posY--;
-				else if(retryType === SIDES.DOWN && colTile.posY < tempPosY)
+				else if(retryType === SIDES.DOWN && colTile.posY < centerY)
 					playerTiles.posY++;
 
 				retryCount++;
@@ -176,12 +168,22 @@ window.Controller = (function(){
 			}
 		}
 
-		if(rotateLegit){
-			tempPosX = null;
-			tempPosY = null;
-		}
-		else
+		if(!rotateLegit){
+			erasePlayerTiles();
 			playerTiles.list = oldplayerTiles;
+			arrTiles = arrTiles.concat(playerTiles.list);
+		}
+	}
+
+	function erasePlayerTiles(){
+		for(var i = 0, j = arrTiles.length; i < j; i++){
+			var tile = arrTiles[i];
+			if(playerTiles.list.indexOf(tile) !== -1){
+				arrTiles.splice(i, 1);
+				i--;
+				j--;
+			}
+		}
 	}
 
 	/**

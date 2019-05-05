@@ -58,6 +58,7 @@ const SIDES = {
 	LEFT: 0,
 	RIGHT: 1,
 	UP: 2,
+	DOWN: 3,
 };
 const SIDES_LENGTH = Object.keys(SIDES).length;
 const MAX_ROTATE_TYPE = 3;

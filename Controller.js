@@ -54,17 +54,17 @@ window.Controller = (function(){
 		if(checkVerticalCollision())
 			createPlayerTiles();
 		else
-			playerTiles.moveDown();
+			playerTiles.posY++;
 	}
 
 	function moveLeft(){
 		if(!checkHorizontalCollision(KEYS.LEFT))
-			playerTiles.moveLeft();
+			playerTiles.posX--;
 	}
 
 	function moveRight(){
 		if(!checkHorizontalCollision(KEYS.RIGHT))
-			playerTiles.moveRight();
+			playerTiles.posX++;
 	}
 
 	function restartFall(){
@@ -131,63 +131,57 @@ window.Controller = (function(){
 			}
 		}
 
-		/*var retryTimes = Math.ceil(tileDim / 2);
+		var retryTimes = Math.ceil(tileDim / 2);
 		var retryCount = 0;
 		var retryType = 0;
 		var rotateLegit = true;
 
-		while(checkTileIntersection()){
+		var colTile;
+		var tempPosX = null;
+		var tempPosY = null;
+		var centerX;
+		var centerY;
+
+		while((colTile = checkTileIntersection())){
 			if(retryType === SIDES_LENGTH){
 				rotateLegit = false;
 				break;
 			}
 
+			centerX = playerTiles.posX + Math.ceil(tileDim / 2);
+			centerY = playerTiles.posY + Math.ceil(tileDim / 2);
+
 			if(retryCount < retryTimes){
-				for(var i = 0, j = playerTiles.list.length; i < j; i++){
-					var tile = playerTiles.list[i];
-
-					if(typeof tile._posX === 'undefined' && typeof tile._posY === 'undefined'){
-						tile._posX = tile.posX;
-						tile._posY = tile.posY;
-					}
-
-					if(retryType === SIDES.LEFT)
-						tile.posX--;
-					else if(retryType === SIDES.RIGHT)
-						tile.posX++;
-					if(retryType === SIDES.UP)
-						tile.posY--;
+				if(tempPosX === null && tempPosY === null){
+					tempPosX = playerTiles.posX;
+					tempPosY = playerTiles.posY;
 				}
 
-				if(retryType === SIDES.LEFT)
+				if(retryType === SIDES.LEFT && colTile.posX > tempPosX)
 					playerTiles.posX--;
-				else if(retryType === SIDES.RIGHT)
+				else if(retryType === SIDES.RIGHT && colTile.posX < tempPosX)
 					playerTiles.posX++;
-				if(retryType === SIDES.UP)
+				else if(retryType === SIDES.UP && colTile.posY > tempPosY)
 					playerTiles.posY--;
+				else if(retryType === SIDES.DOWN && colTile.posY < tempPosY)
+					playerTiles.posY++;
 
 				retryCount++;
 			}
 			else{
 				retryCount = 0;
 				retryType++;
-				for(var i = 0, j = playerTiles.list.length; i < j; i++){
-					var tile = playerTiles.list[i];
-					tile.posX = tile._posX;
-					tile.posY = tile._posY;
-				}
+				playerTiles.posX = tempPosX;
+				playerTiles.posY = tempPosY;
 			}
 		}
 
 		if(rotateLegit){
-			for(var i = 0, j = playerTiles.list.length; i < j; i++){
-				var tile = playerTiles.list[i];
-				delete tile._posX;
-				delete tile._posY;
-			}
+			tempPosX = null;
+			tempPosY = null;
 		}
 		else
-			playerTiles.list = oldplayerTiles;*/
+			playerTiles.list = oldplayerTiles;
 	}
 
 	/**
@@ -242,10 +236,10 @@ window.Controller = (function(){
 			for(var pti = 0, ptiLength = playerTiles.list.length; pti < ptiLength; pti++){
 				var playerTile = playerTiles.list[pti];
 				if(tile.posX === playerTile.posX && tile.posY === playerTile.posY)
-					return true;
+					return tile;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	return Controller;

@@ -8,41 +8,47 @@
 	}
 
 	function TileGroup(){
-		this.list = [];
-		this.posX = 0;
-		this.posY = 0;
+		var self = this;
+
+		self.list = [];
+
+		self._prevX = 0;
+		self._prevY = 0;
+
+		var _posX;
+		var _posY;
+
+		Object.defineProperty(self, 'posX', {
+			set: function(posX){
+				_posX = posX;
+				updatePosition.call(self);
+				self._prevX = posX;
+			},
+			get: function(){
+				return _posX;
+			},
+		});
+
+		Object.defineProperty(self, 'posY', {
+			set: function(posY){
+				_posY = posY;
+				updatePosition.call(self);
+				self._prevY = posY;
+			},
+			get: function(){
+				return _posY;
+			},
+		});
 	}
 
-	TileGroup.prototype.moveDown = function(){
-		this.posY++;
-		updatePosition.call(this, KEYS.DOWN);
-	}
+	function updatePosition(){
+		var distX = this.posX - this._prevX;
+		var distY = this.posY - this._prevY;
 
-	TileGroup.prototype.moveLeft = function(){
-		this.posX--;
-		updatePosition.call(this, KEYS.LEFT);
-	}
-
-	TileGroup.prototype.moveRight = function(){
-		this.posX++;
-		updatePosition.call(this, KEYS.RIGHT);
-	}
-
-	function updatePosition(key){
 		for(var i = 0, j = this.list.length; i < j; i++){
 			var tile = this.list[i];
-
-			switch(key){
-				case KEYS.DOWN :
-					tile.posY++; 
-					break;
-				case KEYS.LEFT : 
-					tile.posX--;
-					break;
-				case KEYS.RIGHT : 
-					tile.posX++;
-					break;
-			}
+			tile.posX += distX;
+			tile.posY += distY;
 		}
 	}
 

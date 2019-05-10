@@ -53,6 +53,7 @@ const KEYS = {
 	DOWN: 40,
 	LEFT: 37,
 	RIGHT: 39,
+	SPACE: 32,
 };
 const SIDES = {
 	LEFT: 0,

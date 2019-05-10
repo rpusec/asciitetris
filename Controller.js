@@ -42,6 +42,9 @@ window.Controller = (function(){
 			case KEYS.RIGHT : 
 				moveRight();
 				break;
+			case KEYS.SPACE : 
+				moveRapidDownwards();
+				break;
 		}
 
 		view.updateView(arrTiles);
@@ -239,6 +242,14 @@ window.Controller = (function(){
 			}
 		}
 		return null;
+	}
+
+	function moveRapidDownwards(){
+		restartFall();
+		while(!checkVerticalCollision()){
+			playerTiles.posY++;
+		}
+		createPlayerTiles();
 	}
 
 	return Controller;

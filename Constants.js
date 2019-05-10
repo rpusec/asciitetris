@@ -1,5 +1,5 @@
 const dimensions = {
-	w: 20,
+	w: 15,
 	h: 25,
 };
 const maxTilesAmount = dimensions.w * dimensions.h;

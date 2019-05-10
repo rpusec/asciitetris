@@ -266,6 +266,7 @@ window.Controller = (function(){
 	}
 
 	function removeTilesFromCompleteRows(){
+		var arrClearedRows = [];
 		for(var row = dimensions.h - 1; row >= 0; row--){
 			var tilesToRemove = [];
 			for(var col = dimensions.w - 1; col >= 0; col--){
@@ -280,7 +281,24 @@ window.Controller = (function(){
 				arrTiles = arrTiles.filter(function(tile){
 					return tilesToRemove.indexOf(tile) === -1;
 				});
+				arrClearedRows.push(row);
 			}
+		}
+
+		while(arrClearedRows.length > 0){
+			/*
+				We're using "-1" so that we can select 
+				the tiles above the cleared row.
+			*/
+			for(var row = arrClearedRows[0] - 1; row >= 0; row--){
+				for(col = dimensions.w - 1; col >= 0; col--){
+					var tile = getTileByCoord(col, row);
+					tile !== null && tile.type === TILE_TYPES.TILE && tile.posY++;
+				}
+			}
+			arrClearedRows.shift();
+			for(var i = 0, j = arrClearedRows.length; i < j; i++)
+				arrClearedRows[i]++;
 		}
 	}
 

@@ -86,6 +86,7 @@ window.Controller = (function(){
 		currShapeIndex = Math.floor(Math.random() * tileShapes.length);
 		view.updatePlayerTileSkin();
 		rotatePlayerTiles();
+		removeTilesFromCompleteRows();
 	}
 
 	/**
@@ -175,6 +176,9 @@ window.Controller = (function(){
 		}
 	}
 
+	/**
+	 * Removes player tiles from the tile array. 
+	 */
 	function erasePlayerTiles(){
 		for(var i = 0, j = arrTiles.length; i < j; i++){
 			var tile = arrTiles[i];
@@ -229,6 +233,11 @@ window.Controller = (function(){
 		return false;
 	}
 
+	/**
+	 * Checks if a falling tile was intersected with another Tile, in the sense that a 
+	 * particular falling tile has the same coordinates as an immobile tile. 
+	 * @return {Tile} Intersected Tile, otherwise null. 
+	 */
 	function checkTileIntersection(){
 		for(var ti = 0, tiLength = arrTiles.length; ti < tiLength; ti++){
 			var tile = arrTiles[ti];
@@ -244,12 +253,47 @@ window.Controller = (function(){
 		return null;
 	}
 
+	/**
+	 * Moves the falling tiles downwards until it collides 
+	 * with immobile tiles underneath. 
+	 */
 	function moveRapidDownwards(){
 		restartFall();
 		while(!checkVerticalCollision()){
 			playerTiles.posY++;
 		}
 		createPlayerTiles();
+	}
+
+	function removeTilesFromCompleteRows(){
+		for(var row = dimensions.h - 1; row >= 0; row--){
+			var tilesToRemove = [];
+			for(var col = dimensions.w - 1; col >= 0; col--){
+				var tile = getTileByCoord(col, row);
+				if(tile === null)
+					break;
+
+				if(tile.type === TILE_TYPES.TILE)
+					tilesToRemove.push(tile);
+			}
+			if(tilesToRemove.length === dimensions.w - 2){
+				arrTiles = arrTiles.filter(function(tile){
+					return tilesToRemove.indexOf(tile) === -1;
+				});
+			}
+		}
+	}
+
+	function getTileByCoord(posX, posY){
+		for(var ti = 0, tiLength = arrTiles.length; ti < tiLength; ti++){
+			var tile = arrTiles[ti];
+			if(playerTiles.list.indexOf(tile) !== -1)
+				continue;
+
+			if(tile.posX === posX && tile.posY === posY)
+				return tile;
+		}
+		return null;
 	}
 
 	return Controller;

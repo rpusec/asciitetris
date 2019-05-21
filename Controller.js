@@ -6,6 +6,7 @@ window.Controller = (function(){
 	var fallInterval;
 	var view;
 	var gameOver = false;
+	var arrNextTiles = null;
 
 	function Controller(){
 		view = new window.View(this);
@@ -20,13 +21,23 @@ window.Controller = (function(){
 		for(var i = 1; i < dimensions.w - 1; i++)
 			arrTiles.push(new Tile(i, dimensions.h - 1, TILE_TYPES.WALL));
 
+		shuffle(tileShapes);
+
 		createPlayerTiles();
-		view.updateView(arrTiles);
+		view.updateView();
 		restartFall();
 	}
 
 	Controller.prototype.isGameOver = function(){
 		return gameOver;
+	}
+
+	Controller.prototype.getArrTiles = function(){
+		return arrTiles;
+	}
+
+	Controller.prototype.getArrNextTiles = function(){
+		return arrNextTiles;
 	}
 
 	window.addEventListener('keydown', function(e){
@@ -55,7 +66,7 @@ window.Controller = (function(){
 				break;
 		}
 
-		view.updateView(arrTiles);
+		view.updateView();
 	}, false);
 
 	function moveDown(){
@@ -82,7 +93,7 @@ window.Controller = (function(){
 
 		fallInterval = setInterval(function(){
 			moveDown();
-			view.updateView(arrTiles);
+			view.updateView();
 		}, 1000);
 	}
 
@@ -95,20 +106,25 @@ window.Controller = (function(){
 		playerTiles.posY = 0;
 		rotationType = 0;
 
-		if(currShapeIndex === 0)
+		currShapeIndex = getNextShapeIndex();
+		if(getNextShapeIndex() === 0)
 			shuffle(tileShapes);
-		
-		currShapeIndex = (currShapeIndex + 1) % tileShapes.length;
+
+		arrNextTiles = tileShapes[getNextShapeIndex()];
 
 		view.updatePlayerTileSkin();
 		if(!rotatePlayerTiles()){
 			gameOver = true;
 			erasePlayerTiles();
-			view.updateView(arrTiles);
+			view.updateView();
 			restartFall();
 		}
 		else
 			removeTilesFromCompleteRows();
+	}
+
+	function getNextShapeIndex(){
+		return (currShapeIndex + 1) % tileShapes.length;
 	}
 
 	/**

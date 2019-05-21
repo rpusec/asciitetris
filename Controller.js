@@ -1,7 +1,7 @@
 window.Controller = (function(){
 	var arrTiles = [];
 	var playerTiles;
-	var currShapeIndex;
+	var currShapeIndex = 0;
 	var rotationType = 0;
 	var fallInterval;
 	var view;
@@ -94,7 +94,12 @@ window.Controller = (function(){
 		playerTiles.posX = Math.floor(dimensions.w / 2) - Math.floor(tileDim / 2);
 		playerTiles.posY = 0;
 		rotationType = 0;
-		currShapeIndex = Math.floor(Math.random() * tileShapes.length);
+
+		if(currShapeIndex === 0)
+			shuffle(tileShapes);
+		
+		currShapeIndex = (currShapeIndex + 1) % tileShapes.length;
+
 		view.updatePlayerTileSkin();
 		if(!rotatePlayerTiles()){
 			gameOver = true;
@@ -338,6 +343,30 @@ window.Controller = (function(){
 				return tile;
 		}
 		return null;
+	}
+
+	/**
+	 * Shuffles the items within an array. 
+	 * @param  {Array} array Array to shuffle.
+	 * @return {Array}       Shuffled array.
+	 * @see https://bost.ocks.org/mike/shuffle/
+	 */
+	function shuffle(array) {
+		var m = array.length, t, i;
+
+		// While there remain elements to shuffle…
+		while (m) {
+
+			// Pick a remaining element…
+			i = Math.floor(Math.random() * m--);
+
+			// And swap it with the current element.
+			t = array[m];
+				array[m] = array[i];
+				array[i] = t;
+		}
+
+		return array;
 	}
 
 	return Controller;

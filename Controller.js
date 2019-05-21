@@ -5,9 +5,10 @@ window.Controller = (function(){
 	var rotationType = 0;
 	var fallInterval;
 	var view;
+	var gameOver = false;
 
 	function Controller(){
-		view = new window.View();
+		view = new window.View(this);
 
 		playerTiles = new TileGroup();
 
@@ -24,8 +25,15 @@ window.Controller = (function(){
 		restartFall();
 	}
 
+	Controller.prototype.isGameOver = function(){
+		return gameOver;
+	}
+
 	window.addEventListener('keydown', function(e){
 		var key = e.which || e.keyCode;
+
+		if(gameOver)
+			return;
 
 		switch(key){
 			case KEYS.UP : 
@@ -69,6 +77,9 @@ window.Controller = (function(){
 
 	function restartFall(){
 		clearInterval(fallInterval);
+		if(gameOver)
+			return;
+
 		fallInterval = setInterval(function(){
 			moveDown();
 			view.updateView(arrTiles);
@@ -85,14 +96,24 @@ window.Controller = (function(){
 		rotationType = 0;
 		currShapeIndex = Math.floor(Math.random() * tileShapes.length);
 		view.updatePlayerTileSkin();
-		rotatePlayerTiles();
-		removeTilesFromCompleteRows();
+		if(!rotatePlayerTiles()){
+			gameOver = true;
+			erasePlayerTiles();
+			view.updateView(arrTiles);
+			restartFall();
+		}
+		else
+			removeTilesFromCompleteRows();
 	}
 
 	/**
 	 * Rotates the falling tiles clockwise. 
+	 * @return {Boolean} True if the player tiles rotated successfully, false otherwise. 
 	 */
 	function rotatePlayerTiles(){
+		if(gameOver)
+			return false;
+
 		erasePlayerTiles();
 		var oldplayerTiles = playerTiles.list.splice(0, playerTiles.list.length);
 
@@ -174,6 +195,8 @@ window.Controller = (function(){
 			playerTiles.list = oldplayerTiles;
 			arrTiles = arrTiles.concat(playerTiles.list);
 		}
+
+		return rotateLegit;
 	}
 
 	/**
@@ -266,6 +289,9 @@ window.Controller = (function(){
 	}
 
 	function removeTilesFromCompleteRows(){
+		if(gameOver)
+			return;
+
 		var arrClearedRows = [];
 		for(var row = dimensions.h - 1; row >= 0; row--){
 			var tilesToRemove = [];

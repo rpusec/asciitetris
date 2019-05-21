@@ -3,6 +3,7 @@ window.View = (function(){
 		BG: '&nbsp;',
 		NEW_LINE: '<br/>',
 		WALL: '#',
+		GAME_OVER: 'GAME OVER',
 	};
 
 	var elemScreen;
@@ -10,8 +11,10 @@ window.View = (function(){
 	var countUnicodeTile = 0;
 	var baseUnicodeTile = 65;
 	var fallTileChar = null;
+	var controller;
 
-	function View(){
+	function View(_controller){
+		controller = _controller;
 		elemScreen = document.getElementsByTagName('body')[0];
 	}
 
@@ -54,6 +57,13 @@ window.View = (function(){
 					res += ASSETS.BG;
 			}
 			res += ASSETS.NEW_LINE;
+		}
+
+		if(controller.isGameOver()){
+			var dist = Math.floor(dimensions.w / 2) - Math.floor(ASSETS.GAME_OVER.length / 2);
+			for(var i = 0; i < dist; i++)
+				res += ASSETS.BG;
+			res += 'GAME OVER';
 		}
 
 		elemScreen.innerHTML = res;

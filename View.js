@@ -98,7 +98,7 @@ window.View = (function(){
 					res += ASSETS.WALL;
 				}
 				else{
-					var ind = (i - 1) + row * tileDim;
+					var ind = (i - 1) + (row - 1) * tileDim;
 					var tile = arrNextTiles[ind];
 					res += tile === 1 ? String.fromCharCode(nextFallTileChar) : ASSETS.BG;
 				}

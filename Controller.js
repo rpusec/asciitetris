@@ -21,11 +21,7 @@ window.Controller = (function(){
 		for(var i = 1; i < dimensions.w - 1; i++)
 			arrTiles.push(new Tile(i, dimensions.h - 1, TILE_TYPES.WALL));
 
-		shuffle(tileShapes);
-
-		createPlayerTiles();
-		view.updateView();
-		restartFall();
+		restartGame();
 	}
 
 	Controller.prototype.isGameOver = function(){
@@ -43,8 +39,10 @@ window.Controller = (function(){
 	window.addEventListener('keydown', function(e){
 		var key = e.which || e.keyCode;
 
-		if(gameOver)
+		if(gameOver){
+			restartGame();
 			return;
+		}
 
 		switch(key){
 			case KEYS.UP : 
@@ -68,6 +66,17 @@ window.Controller = (function(){
 
 		view.updateView();
 	}, false);
+
+	function restartGame(){
+		currShapeIndex = 0;
+		rotationType = 0;
+		gameOver = false;
+		eraseAllTilesExceptWall();
+		shuffle(tileShapes);
+		createPlayerTiles();
+		view.updateView();
+		restartFall();
+	}
 
 	function moveDown(){
 		if(checkVerticalCollision())
@@ -115,6 +124,7 @@ window.Controller = (function(){
 		view.updatePlayerTileSkin();
 		if(!rotatePlayerTiles()){
 			gameOver = true;
+			arrNextTiles = null;
 			erasePlayerTiles();
 			view.updateView();
 			restartFall();
@@ -227,6 +237,17 @@ window.Controller = (function(){
 		for(var i = 0, j = arrTiles.length; i < j; i++){
 			var tile = arrTiles[i];
 			if(playerTiles.list.indexOf(tile) !== -1){
+				arrTiles.splice(i, 1);
+				i--;
+				j--;
+			}
+		}
+	}
+
+	function eraseAllTilesExceptWall(){
+		for(var i = 0, j = arrTiles.length; i < j; i++){
+			var tile = arrTiles[i];
+			if(tile.type !== TILE_TYPES.WALL){
 				arrTiles.splice(i, 1);
 				i--;
 				j--;

@@ -94,14 +94,15 @@ window.View = (function(){
 		}
 		else{
 			for(var i = 0; i <= offBounceAmount; i++){
-				if((i === 0) || (i === offBounceAmount)){
+				if((i === 0) || (i === offBounceAmount))
 					res += ASSETS.WALL;
-				}
-				else{
+				else if(Array.isArray(arrNextTiles)){
 					var ind = (i - 1) + (row - 1) * tileDim;
 					var tile = arrNextTiles[ind];
 					res += tile === 1 ? String.fromCharCode(nextFallTileChar) : ASSETS.BG;
 				}
+				else
+					res += ASSETS.BG;
 			}
 		}
 
